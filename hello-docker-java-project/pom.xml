@@ -3,7 +3,6 @@
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.example</groupId>
     <artifactId>DockerProjects</artifactId>
@@ -12,9 +11,8 @@
   </parent>
 
   <groupId>org.springframework.samples</groupId>
-  <artifactId>spring-petclinic</artifactId>
+  <artifactId>hello-docker-java-project</artifactId>
   <version>3.2.0-SNAPSHOT</version>
-  <name>petclinic</name>
 
   <properties>
     <!-- Generic properties -->
@@ -322,6 +320,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
+            <version>3.6.0</version>
             <executions>
               <execution>
                 <id>unpack</id>

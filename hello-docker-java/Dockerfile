@@ -5,7 +5,7 @@
 FROM openjdk:17-jdk-slim
 
 # 复制项目中生成的jar到容器中
-ADD target/hello-docker-java-1.0.0.jar hello-docker-app.jar
+ADD target/hello-docker-java-1.0.0-jar-with-dependencies.jar hello-docker-app.jar
 
 # ENTRYPOINT所设置的命令是一定会被执行
 # 注意这里应用启动的相对位置

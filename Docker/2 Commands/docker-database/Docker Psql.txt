@@ -1,27 +1,28 @@
-TODO. Docker Postgres Setup 使用Docker快速搭建PSQL测试数据库
-Create Docker container with Postgres database:
-> docker create --name postgres-demo -e POSTGRES_PASSWORD=Welcome -p 5432:5432 postgres:11.5-alpine
-Start container:
-> docker start postgres-demo
-Stop container:
-> docker stop postgres-demo
+TODO. Docker Postgres Setup
+https://hub.docker.com/_/postgres
 
-Setup the Tables:
+Create Docker container with Postgres database:
+> docker create --name postgres-demo -e POSTGRES_PASSWORD=pwd -p 5432:5432 postgres:11.5-alpine
+> docker ps -a 列出所有创建的容器
+> docker start postgres-demo
+> docker stop postgres-demo
+> docker rm postgres-demo
+
+Connect to PSQL prompt from docker: 以交互式进入psql执行, 默认以postgres用户进行登陆
+> docker exec -it postgres-demo psql -U postgres
+  psql> create database conference_app;
+  psql> psql -d conference_app -f create_tables.sql
+  psql> psql -d conference_app -f insert_data.sql
+
+Setup the Tables: 复制本地的文件到容器中，并以交互式执行.sql
 > docker cp create_tables.sql postgres-demo:/create_tables.sql
 > docker exec -it postgres-demo psql -d conference_app -f create_tables.sql -U postgres
 
-Install the Data:
 > docker cp insert_data.sql postgres-demo:/insert_data.sql
 > docker exec -it postgres-demo psql -d conference_app -f insert_data.sql -U postgres
 
----------------------------------------------------------------------------------------
-Connection Info:
-    JDBC URL: `jdbc:postgresql://localhost:5432/conference_app`
-    Username: `postgres`
-    Password: `Welcome`
+搭建的数据库并在容器中运行：
+JDBC URL: `jdbc:postgresql://localhost:5432/conference_app`
+Username: `postgres`
+Password: `pwd`
 
-Connect to PSQL prompt from docker:
-> docker exec -it postgres-demo psql -U postgres
-    psql> create database conference_app;
-    psql> psql -d conference_app -f create_tables.sql
-    psql> psql -d conference_app -f insert_data.sql
