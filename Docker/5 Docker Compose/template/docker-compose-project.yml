@@ -1,0 +1,40 @@
+version: "2.4"
+services:
+  mvr:
+    init: true
+    build:
+      context: ${WORKSPACE}/.ci/jenkins/workflow/mvr/docker
+      args:
+        MVR_JAR: ${MVR_URL}
+        ROOT_IMAGE: ${ROOT_IMAGE}
+    hostname: mvr
+    entrypoint:
+      - "/bin/bash"
+      - -c
+      - |
+        init/config.sh --fs ${FS_HOST} ${FS_PORT} --lb ${FS_HOST} --deployments  --resources \
+          && ./launchmxj.app -fs \
+          && ./post-install/post-install.sh \
+          && ./launchmxj.app -xmls -login -agent \
+          && touch ready \
+          && init/await_shutdown.sh
+    cpus: 24
+    mem_limit: "128G"
+    sysctls:
+      net.core.somaxconn: 512
+    oom_kill_disable: true
+    networks:
+      - test
+    volumes:
+      - ${WORKSPACE}/${RESOURCE_DIR}:/resources
+      - ${WORKSPACE}:/workspace
+      - /proc/sys/vm/drop_caches:/host/proc/sys/vm/drop_caches
+    environment:
+      - PYTHONPATH
+      - MVR_CONTAINER
+
+networks:
+  test:
+
+volumes:
+  mvrApp-mvr-perf:

@@ -1,0 +1,182 @@
+version: "2.4"
+services:
+  mvr:
+    init: true
+    build:
+      context: ${WORKSPACE}/.ci/jenkins/workflow/mvr/docker
+      args:
+        MVR_JAR: ${MVR_URL}
+        ROOT_IMAGE: ${ROOT_IMAGE}
+    hostname: mvr
+    entrypoint:
+      - "/bin/bash"
+      - -c
+      - |
+        init/config.sh --fs ${TONG_FS_HOST} ${TONG_FS_PORT} --lb ${TONG_FS_HOST} --deployments --resources --additional \
+          && /opt/monitoring/start_process_exporter.sh \
+          && ./launchmxj.app -fs \
+          && ./post-install/post-install.sh \
+          && ./launchmxj.app -xmls -login -agent \
+          && (cmAdmin/startService.sh fs/public/services/authz/deployment-descriptor-authz.xml & \
+             cmAdmin/startService.sh fs/public/services/service-discovery/deployment-descriptor.xml & \
+             cmAdmin/startService.sh fs/public/services/authn/deployment-descriptor.xml & \
+             cmAdmin/startService.sh fs/public/services/generator/deployment-descriptor.xml & \
+             cmAdmin/startService.sh fs/public/services/load-balancer/deployment-descriptor.xml & \
+             wait) \
+          && cmAdmin/wait.sh \
+          && /resources/prepareBOUser.sh \
+          && touch ready \
+          && init/await_shutdown.sh
+    oom_kill_disable: true
+    sysctls:
+      net.core.somaxconn: 512
+    volumes:
+       - ${WORKSPACE}/${RESOURCE_DIR}:/resources
+       - ${WORKSPACE}/${PACKAGES_DIR}:/packages
+       - ${WORKSPACE}/${MONITORING_TOOLS}:/opt/monitoring
+    expose:
+      - "9256"
+    networks:
+      - test
+    cpus: 14
+    mem_limit: "10G"
+
+  generator:
+    init: true
+    build:
+      context: ${WORKSPACE}/.ci/jenkins/workflow/mvr/docker
+      args:
+        MVR_JAR: ${MVR_URL}
+        ROOT_IMAGE: ${ROOT_IMAGE}
+    hostname: generator
+    networks:
+      - test
+    sysctls:
+      net.core.somaxconn: 512
+    oom_kill_disable: true
+    entrypoint:
+      - "/bin/bash"
+      - -c
+      - |
+        init/config.sh --fs ${TONG_FS_HOST} ${TONG_FS_PORT}  --resources --additional \
+          && /opt/monitoring/start_process_exporter.sh \
+          && /opt/monitoring/start_jmx_exporter.sh 1 5000 9257 \
+          && init/await_fs.sh ${TONG_FS_HOST} ${TONG_FS_PORT} \
+          && ./launchmxj.app -agent \
+          && init/await_shutdown.sh
+    volumes:
+      - ${WORKSPACE}/${PACKAGES_DIR}:/packages
+      - ${WORKSPACE}/${MONITORING_TOOLS}:/opt/monitoring
+      - gc_volume:/data/env/logs/gc
+    expose:
+      - "9256"
+      - "9257"
+    mem_limit: "10G"
+    cpus: 8
+
+  authz-app:
+    init: true
+    build:
+      context: ${WORKSPACE}/.ci/jenkins/workflow/mvr/docker
+      args:
+        MVR_JAR: ${MVR_URL}
+        ROOT_IMAGE: ${ROOT_IMAGE}
+    hostname: authz-app
+    networks:
+      - test
+    cpus: 2
+    mem_limit: "4G"
+    entrypoint:
+      - "/bin/bash"
+      - -c
+      - |
+        init/config.sh --fs ${TONG_FS_HOST} ${TONG_FS_PORT} --additional \
+          && /opt/monitoring/start_process_exporter.sh \
+          && /opt/monitoring/start_jmx_exporter.sh 1 5000 9257 \
+          && init/await_fs.sh ${TONG_FS_HOST} ${TONG_FS_PORT} \
+          && ./launchmxj.app -agent \
+          && init/await_shutdown.sh
+    sysctls:
+      net.core.somaxconn: 512
+    oom_kill_disable: true
+    volumes:
+      - ${WORKSPACE}/${MONITORING_TOOLS}:/opt/monitoring
+      - gc_volume:/data/env/logs/gc
+    expose:
+      - "9256"
+      - "9257"
+
+  load-balancer:
+    init: true
+    build:
+      context: ${WORKSPACE}/.ci/jenkins/workflow/mvr/docker
+      args:
+        MVR_JAR: ${MVR_URL}
+        ROOT_IMAGE: ${ROOT_IMAGE}
+    hostname: load-balancer
+    networks:
+      - test
+    sysctls:
+      net.core.somaxconn: 512
+    oom_kill_disable: true
+    cpus: 8
+    mem_limit: "4G"
+    entrypoint:
+      - "/bin/bash"
+      - -c
+      - |
+        init/config.sh --fs ${TONG_FS_HOST} ${TONG_FS_PORT} --additional \
+          && /opt/monitoring/start_process_exporter.sh \
+          && /opt/monitoring/start_jmx_exporter.sh 1 5000 9257 \
+          && /opt/monitoring/start_httpd_exporter.sh 1 8080 9117 \
+          && init/await_fs.sh ${TONG_FS_HOST} ${TONG_FS_PORT} \
+          && ./launchmxj.app -agent \
+          && init/await_shutdown.sh
+    expose:
+      - "9256"
+      - "9257"
+      - "9117"
+    volumes:
+      - ${WORKSPACE}/${MONITORING_TOOLS}:/opt/monitoring
+      - gc_volume:/data/env/logs/gc
+
+  test:
+    init: true
+    build:
+      context: ${WORKSPACE}/component/mvr/test/perf/common/test-container
+    hostname: test
+    user: jenkins
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${WORKSPACE}/${PACKAGES_DIR}:/packages
+      - ${WORKSPACE}/${MONITORING_TOOLS}:/opt/monitoring
+      - gc_volume:/data/env/logs/gc
+    privileged: true
+    cpus: 4
+    mem_limit: "15G"
+    expose:
+      - "8080"
+    environment:
+      - TONG_FS_HOST
+      - TONG_FS_PORT
+      - TEST_ROOT_DIR
+      - PYTHONPATH
+      - MVR_CONTAINER
+      - TEST_CONTAINER
+      - GENERATOR_CONTAINER
+      - AUTHZ_APP_CONTAINER
+      - LOAD_BALANCER_CONTAINER
+      - COMPOSE_ID
+      - TEST_DURATION
+    networks:
+      - test
+    entrypoint: tail -f /dev/null
+    sysctls:
+      net.core.somaxconn: 512
+    oom_kill_disable: true
+
+networks:
+  test:
+
+volumes:
+  gc_volume:

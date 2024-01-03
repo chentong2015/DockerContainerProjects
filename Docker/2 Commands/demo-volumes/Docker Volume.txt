@@ -1,0 +1,25 @@
+Volumes逻辑卷:
+Docker容器中的数据并不会持久化，可以通过定义逻辑卷来存储
+容器启动后可以在FileSystem中创建和修改文件，容器停止后所有数据都会丢失
+
+逻辑卷解决数据持久化的问题:
+将容器中的指定路径映射到宿主机(docker安装的OS)上的指定目录
+Volumes provide the ability to connect specific filesystem paths of the container back to the host machine
+- src: filesystem of the host machine
+- target: filesystem in the container
+
+$ docker volume create todo-db
+$ docker run -dp 127.0.0.1:3000:3000 --mount type=volume,src=todo-db,target=/etc/todos getting-started
+$ docker volume inspect todo-db
+[
+    {
+        "CreatedAt": "2019-09-26T02:18:36Z",
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/var/lib/docker/volumes/todo-db/_data",
+        "Name": "todo-db",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+$ docker volume rm todo-db

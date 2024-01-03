@@ -1,0 +1,15 @@
+Docker:
+用于构建(build)运行(run)共享(share)应用程序的平台
+1. 将应用程序和它运行时所需要的各种依赖包(第三方软件库，配置文件)打包在一起
+2. 将应用程序原始环境复制，并迁移到任何环境中运行
+3. 降低DevOps运维成本，解决应用程式跨平台间运作
+
+Container:
+1. 容器是一个软件单元，包含应用程序及其完整的依赖和配置
+2. 容器可以部署到指定的宿主操作系统，而不需要进一步的配置即可运行
+3. 在这个"容器"能够运行，也能在生产环境中运行
+TODO. 操作系统是确保容器在部署后能够工作的唯一共同点(多个容器可以共享宿主计算机的操作系统)
+
+Docker Desktop:
+Docker Desktop includes Docker Compose along with Docker Engine and Docker CLI
+下载并安装GUI页面，确保其运行后方可在Terminal执行Docker命令
