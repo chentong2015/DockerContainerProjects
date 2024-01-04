@@ -1,0 +1,42 @@
+version: '3.8'
+
+## 使用Docker Compose同时管理项目依赖的不同服务
+## 替换在docker run命令启动时提供的复杂参数
+
+# 项目所需的两个Docker容器的启动，并且之间存在依赖关系depends_on
+services:
+  petclinic:
+    # 指定用于build的Dockerfile，以及target的stage阶段 ！！
+    build:
+      context: .
+      target: development
+    ports:
+      - "8000:8000"
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - MYSQL_URL=jdbc:mysql://mysqlserver/petclinic
+    volumes:
+      - ./:/app
+    depends_on:
+      - mysqlserver
+
+  mysqlserver:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_USER=petclinic
+      - MYSQL_PASSWORD=petclinic
+      - MYSQL_DATABASE=petclinic
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - mysql_config:/etc/mysql/conf.d
+
+# 定义容器数据持久化逻辑卷
+# docker volume create xxx
+volumes:
+  mysql_data:
+  mysql_config:

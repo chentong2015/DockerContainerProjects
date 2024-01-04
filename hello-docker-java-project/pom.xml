@@ -4,13 +4,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.example</groupId>
-    <artifactId>DockerProjects</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.2.0</version>
+    <relativePath/>
   </parent>
 
-  <groupId>org.springframework.samples</groupId>
   <artifactId>hello-docker-java-project</artifactId>
   <version>3.2.0-SNAPSHOT</version>
 
@@ -320,7 +319,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
-            <version>3.6.0</version>
             <executions>
               <execution>
                 <id>unpack</id>

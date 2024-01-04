@@ -1,0 +1,28 @@
+当启动多个不同的容器时，容器之间需要通过networking来进行通讯
+
+1. 首先创建容器之间通讯的network, 默认的bridge不能删除
+> docker network create net-app
+> docker network ls
+  NETWORK ID     NAME       DRIVER    SCOPE
+  acd339409c10   net-app    bridge    local
+  0cd199bdc6a8   bridge     bridge    local
+  e1c94b503fae   host       host      local
+  bba5a3726b58   none       null      local
+
+2. 在启动运行DB容器时设置使用特定的network
+> docker run -d \
+    --network net-app --network-alias mysql \
+    -v todo-mysql-data:/var/lib/mysql \
+    -e MYSQL_ROOT_PASSWORD=secret \
+    -e MYSQL_DATABASE=todos \
+    mysql:8.0
+
+3. 启动运行APP容器时使用相同的network，同时支持传递环境变量(连接DB)
+> docker run -dp 127.0.0.1:3000:3000 \
+  -w /app -v "$(pwd):/app" \
+  --network net-app \
+  -e MYSQL_HOST=mysql \
+  -e MYSQL_USER=root \
+  -e MYSQL_PASSWORD=secret \
+  -e MYSQL_DB=todos \
+  node:18-alpine \
