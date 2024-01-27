@@ -14,8 +14,8 @@ TODO. 容器化过程: 将应用程序打包成容器，然后在容器中运行
 > docker image rm -f image-name
 > docker cp xxx.jar container_name:/data/env 复制指定文件到容器中指定路径
 
----------------------------------------------------------------------------------
 > docker run image_name 使用指定的镜像来运行容器
+> docker run --name container_name image-name 定义启动容器的名称
 > docker run -dp 127.0.0.1:3000:3000 image-name 将容器的端口暴露给主机
 > docker run --publish 8080:8080 image-name
 
@@ -24,7 +24,6 @@ TODO. 容器化过程: 将应用程序打包成容器，然后在容器中运行
 > docker build -t image-name --target test .  以指定的stage来构建镜像
 > docker run -it --rm --name springboot-test image-name 创建并运行容器，执行的stage的配置
 
----------------------------------------------------------------------------------
 > docker ps 显示正在运行的容器
   CONTAINER ID   IMAGE             COMMAND     CREATED  STATUS  PORTS   NAMES
   01aa81c69c5d   getting-started   "docker-“
