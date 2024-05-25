@@ -2,20 +2,11 @@ TODO. Docker Postgres Setup
 https://hub.docker.com/_/postgres
 
 # 创建容器并运行
-> docker run
-   --name postgres-db
-   -e POSTGRES_USER=postgres
-   -e POSTGRES_PASSWORD=pwd
-   -e POSTGRES_DB=test_db
-   -p 5432:5432
-   postgres:16.1
+> docker run --name postgres-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=pwd -e POSTGRES_DB=test_db
+   -p 5432:5432 postgres:16.1
 
 # 仅创建容器不运行
-> docker create
-    --name postgres-demo
-    -e POSTGRES_PASSWORD=pwd
-    -p 5432:5432
-    postgres:11.5-alpine
+> docker create --name postgres-demo -e POSTGRES_PASSWORD=pwd -p 5432:5432 postgres:11.5-alpine
 > docker ps -a 列出所有创建的容器
 > docker start postgres-demo
 > docker stop postgres-demo

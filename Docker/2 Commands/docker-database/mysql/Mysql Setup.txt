@@ -1,0 +1,34 @@
+启动Mysql的容器时需要配置连接的参数，设置启动的容器名称以便通过名称来启动
+> docker run -it
+  --name mysql
+  -e MYSQL_USER=test
+  -e MYSQL_PASSWORD=test
+  -e MYSQL_ROOT_PASSWORD=root
+  -e MYSQL_ALLOW_EMPTY_PASSWORD=true
+  -e MYSQL_RANDOM_ROOT_PASSWORD=root
+  -p 3306:3306 mysql:8.2
+
+TODO. 只需要选择一种PASSWORD的设置策略
+> docker run -it -name mysql -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 mysql:8.2
+
+通过命令行连接Mysql数据库
+> docker exec -it <container-id> mysql -u root -p
+  mysql> SHOW DATABASES;
+  mysql> exit
+
+
+创建volume分区备份DB数据库中的数据
+> docker volume create mysql_data
+> docker volume create mysql_config
+> docker network create mysqlnet
+
+> docker run -it --rm -d
+  -v mysql_data:/var/lib/mysql \
+  -v mysql_config:/etc/mysql/conf.d \
+  --network mysqlnet \
+  --name mysqlserver \
+  -e MYSQL_USER=petclinic \
+  -e MYSQL_PASSWORD=petclinic \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=petclinic \
+  -p 3306:3306 mysql:8.0
