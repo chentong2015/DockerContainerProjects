@@ -1,0 +1,15 @@
+TODO. 交换模式进入容器, 需要使用特定的Shell Command命令
+1. 使用容器名称(启动时定义)或者容器ID来执行交互模式
+2. 支持执行容器中特定的脚本或者应用
+
+> docker exec -it [container_id] bash
+> docker exec -it [container_id] sh
+  -it interactive terminal
+  /app dir by default 默认进入WORKDIR目录
+  > exit
+
+> docker exec -it mongo mongosh 使用特定数据库Shell
+
+> docker exec -it redis_server redis-cli 以cli命令行接口进行交互
+
+> docker exec [container_id] sh -c './hello.sh'

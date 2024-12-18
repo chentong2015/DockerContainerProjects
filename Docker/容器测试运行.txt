@@ -3,6 +3,10 @@ TODO. 容器化过程: 将应用程序打包成容器，然后在容器中运行
 2. 使用dockerfile来构建镜像
 3. 使用镜像来创建出容器并运行
 
+TODO. Docker自动化部署以及测试
+1. 通过交换模式进入容器中，启动服务，自动化测试，执行特定的脚本
+2. 通过非交换模式执行容器中复制的文件，测试功能
+
 > docker build -t image-name .  根据当前目录下Dockerfile文件来构建镜像，设置镜像的tag名称
 > docker build -t image-name:version .  设置镜像的版本号
 > docker image ls 查看所有的镜像
