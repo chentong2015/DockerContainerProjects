@@ -1,4 +1,5 @@
-Docker官方开源项目，统一管理项目中不同服务之间的依赖和关联
+Docker Compose官方开源项目:
+统一管理项目中不同服务之间的依赖和关联
 
 TODO. 通过yaml文件一键构建容器的启动和配置
 > docker-compose --version
