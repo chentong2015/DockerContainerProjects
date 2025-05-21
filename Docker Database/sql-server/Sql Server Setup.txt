@@ -4,8 +4,5 @@ https://hub.docker.com/r/microsoft/mssql-server
 > docker pull mcr.microsoft.com/mssql/server:2022-latest
 > docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Test123&" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
 
-设置-d启动参数: -d, --detach
-Run container in background and print container ID
-
 Login: sa (默认创建用户)
 Password: Test123& (自定义密码，至少8位)

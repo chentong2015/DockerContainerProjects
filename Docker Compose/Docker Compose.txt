@@ -8,5 +8,9 @@ TODO. 通过yaml文件一键构建容器的启动和配置
 > docker compose -f docker-compose.dev.yml up --build
   --build flag so Docker will compile your image and then starts the containers
 
+> docker-compose down
+> docker-compose down -v 删除volume数据
+> docker-compose up -d
+
 https://docs.docker.com/compose/gettingstarted/
 https://docs.docker.com/get-started/08_using_compose/
